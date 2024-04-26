@@ -43,31 +43,35 @@ function App() {
         placeholder="Search ..."
       />
 
-      <table>
-        <caption>Person List:</caption>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Age</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>
-              {true ? <span>John</span> : <input type="text" value="John" />}
-            </td>
-            <td>
-              {true ? <span>40</span> : <input type="number" value="40" />}
-            </td>
-            <td>
-              <i className="action__button material-icons">edit</i>
-              <i className="action__button material-icons">save</i>
-              <i className="action__button material-icons">delete</i>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      {persons.length === 0 ? (
+        <p>No data found</p>
+      ) : (
+        <table>
+          <caption>Person List:</caption>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Age</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                {true ? <span>John</span> : <input type="text" value="John" />}
+              </td>
+              <td>
+                {true ? <span>40</span> : <input type="number" value="40" />}
+              </td>
+              <td>
+                <i className="action__button material-icons">edit</i>
+                <i className="action__button material-icons">save</i>
+                <i className="action__button material-icons">delete</i>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      )}
 
       <hr />
       <footer>all right received</footer>
