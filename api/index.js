@@ -35,10 +35,14 @@ app.get("/person", (req, res) => {
 
 app.post("/person", (req, res) => {
   const { name, age } = req.body;
-  new Person({ name, age })
-    .save()
-    .then((data) => res.json(data))
-    .catch((e) => res.status(500).json({ message: e.message }));
+  if (name && age) {
+    new Person({ name, age })
+      .save()
+      .then((data) => res.json(data))
+      .catch((e) => res.status(500).json({ message: e.message }));
+  } else {
+    res.status(400).json({ message: "Inputs are not valid" });
+  }
 });
 
 app.put("/person/:id", (req, res) => {
