@@ -8,6 +8,7 @@ function App() {
   const [persons, setPersons] = useState([]);
   const [person, setPerson] = useState({ name: "", age: 0 });
 
+
   const handleSubmit = (e) => {
     e.preventDefault();
     /*
@@ -30,7 +31,7 @@ function App() {
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log(data);
+        allPerson()
         setPerson({ name: "", age: 0 });
       })
       .then((e) => setError(e));
@@ -39,17 +40,55 @@ function App() {
   const handleDelete = (id) => {
     fetch(`${apiHost}/person/${id}`, { method: "DELETE" })
       .then((response) => response.json())
-      .then((data) => console.log(data))
+      .then((data) => allPerson())
       .catch((e) => setError(e.message));
   };
 
-  const handleUpdate = (p) => {};
+  const handleUpdate = (p) => {
+    setPersons(
+      persons.map(ip => {
+        if(ip._id === p._id ) ip.isEdit = !ip.isEdit
+        return ip
+      })
+    )
+  };
+
   const handleChange = (e) => {
     setPerson({ ...person, [e.target.name]: e.target.value });
   };
-  const handleEditInputChange = (e) => {};
 
-  useEffect(() => {
+  const handleEditInputChange = (e, p) => {
+    //allow input box to be edit
+    setPersons(
+      persons.map((ip) =>
+        ip._id === p._id ? { ...ip, [e.target.name]: e.target.value } : ip
+      )
+    );
+  };
+
+  const updatePerson = (p) => {
+    //save it
+    console.log(p)
+    fetch(`${apiHost}/person/${p._id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(p),
+    })
+      .then(response => response.json())
+      .then(data => console.log('updated'))
+      .catch(error => setError(error.message))
+
+    //close 
+    setPersons(
+      persons.map(ip => {
+        if(ip._id === p._id ) ip.isEdit = !ip.isEdit
+        return ip
+      })
+    )
+    
+  }
+
+  const allPerson = () => {
     fetch(`${apiHost}/person`)
       .then((response) => response.json())
       .then((data) => {
@@ -60,10 +99,14 @@ function App() {
           });
           setPersons(modifiedPersonJson);
         }
-        throw new Error("Fetch error");
       })
       .catch((e) => setError(e.message));
-  }, [handleDelete]);
+  }
+  
+  useEffect(() => {
+    console.log('useEffect called')
+    allPerson()
+  }, []);
 
   return (
     <div>
@@ -135,8 +178,9 @@ function App() {
                   {p.isEdit ? (
                     <input
                       type="text"
+                      name="name"
                       value={p.name}
-                      onChange={handleEditInputChange}
+                      onChange={(e) => handleEditInputChange(e,p)}
                     />
                   ) : (
                     <span>{p.name}</span>
@@ -146,8 +190,9 @@ function App() {
                   {p.isEdit ? (
                     <input
                       type="number"
+                      name="age"
                       value={p.age}
-                      onChange={handleEditInputChange}
+                      onChange={(e) => handleEditInputChange(e,p)}
                     />
                   ) : (
                     <span>{p.age}</span>
@@ -155,7 +200,7 @@ function App() {
                 </td>
                 <td>
                   {p.isEdit ? (
-                    <i className="action__button material-icons">save</i>
+                    <i className="action__button material-icons" onClick={() => updatePerson(p)}>save</i>
                   ) : (
                     <i
                       className="action__button material-icons"
